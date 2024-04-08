@@ -22,7 +22,7 @@ from transformers import (
 )
 from trl import RewardTrainer
 from transformers.utils import PaddingStrategy
-from train import train_reg_hist, train_vanilla, train_rm_dpo
+from train import train_vanilla, train_contrastive
 import os
 # os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 # os.environ["TORCH_USE_CUDA_DSA"] = "1"
@@ -95,3 +95,4 @@ training_args = TrainingArguments(
 
 
 train_vanilla(script_args, training_args, tokenizer_name, model_name, data_path)
+# train_contrastive(script_args, training_args, tokenizer_name, model_name, data_path)

@@ -107,7 +107,7 @@ def train_vanilla(script_args, training_args, tokenizer_name, model_name, data_p
 
 
 
-def train_vanilla(script_args, training_args, tokenizer_name, model_name, data_path):
+def train_contrastive(script_args, training_args, tokenizer_name, model_name, data_path):
     
     # Load the value-head model and tokenizer.
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, use_fast = False)
