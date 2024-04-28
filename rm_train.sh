@@ -1,23 +1,29 @@
+#!/bin/bash
+
+CUDA_VISIBLE_DEVICES=0,1,2,3 accelerate launch --main_process_port 29519 main.py \
+    --learning_rate 1e-5 --num_train_epochs 2 --max_length 1024 --method "vanilla"\
+    --base_model "pretrained_model/TinyLlama-1.1B-Chat-v1.0"\
+    --wandb_name "TinyLlama-1.1B-Chat-v1.0_0.5unifed_vanilla"\
+    --log_dir 'model_finetuned/reward_models_unified_vanilla'
 
 
-CUDA_VISIBLE_DEVICES=0,1,2,3 accelerate launch /home/dingruomeng/robust_rm/reward_train_unified_reg.py
+CUDA_VISIBLE_DEVICES=0,1,2,3 accelerate launch --main_process_port 29519 main.py \
+    --learning_rate 1e-5 --num_train_epochs 2 --max_length 1024 --method "margin"\
+    --base_model "pretrained_model/TinyLlama-1.1B-Chat-v1.0"\
+    --wandb_name "TinyLlama-1.1B-Chat-v1.0_0.5unifed_margin"\
+    --log_dir 'model_finetuned/reward_models_unified_margin'
 
 
-CUDA_VISIBLE_DEVICES=0,1,2,3 accelerate launch /home/dingruomeng/robust_rm/reward_train_contrastive.py 
-
-CUDA_VISIBLE_DEVICES=2,3 accelerate launch /home/dingruomeng/robust_rm/eval_reward_unified.py 
-
-CUDA_VISIBLE_DEVICES=5,6 accelerate launch --main_process_port 29511 /home/dingruomeng/robust_rm/eval_reward_unified_reg_hist.py
-
-CUDA_VISIBLE_DEVICES=0,1,2,3 python /home/dingruomeng/robust_rm/eval_reward_unified_reg_hist.py 
+CUDA_VISIBLE_DEVICES=0,1,2,3 accelerate launch --main_process_port 29519 main.py \
+    --learning_rate 1e-5 --num_train_epochs 2 --max_length 1024 --method "label_smooth"\
+    --base_model "pretrained_model/TinyLlama-1.1B-Chat-v1.0"\
+    --wandb_name "TinyLlama-1.1B-Chat-v1.0_0.5unifed_label_smooth0.1"\
+    --log_dir 'model_finetuned/reward_models_unified_label_smooth0.1'
 
 
-CUDA_VISIBLE_DEVICES=5,6 accelerate launch --main_process_port 29511 /home/dingruomeng/robust_rm/main.py 
+CUDA_VISIBLE_DEVICES=0,1,2,3 accelerate launch --main_process_port 29519 main.py \
+    --learning_rate 1e-5 --num_train_epochs 2 --max_length 1024 --method "contrastive"\
+    --base_model "pretrained_model/TinyLlama-1.1B-Chat-v1.0"\
+    --wandb_name "TinyLlama-1.1B-Chat-v1.0_0.5unifed_contrastive"\
+    --log_dir 'model_finetuned/reward_models_unified_contrastive'
 
-CUDA_VISIBLE_DEVICES=1,2,3,4 CUDA_LAUNCH_BLOCKING=1 accelerate launch --main_process_port 29509 /home/dingruomeng/robust_rm/main.py
-
-CUDA_VISIBLE_DEVICES=1 CUDA_LAUNCH_BLOCKING=1 TORCH_USE_CUDA_DSA=1 python /home/dingruomeng/robust_rm/main.py
-
-CUDA_VISIBLE_DEVICES=1 python /home/dingruomeng/robust_rm/eval_reward_unified_reg_hist.py
-
-CUDA_VISIBLE_DEVICES=0 CUDA_LAUNCH_BLOCKING=1 python /home/dingruomeng/robust_rm/main.py

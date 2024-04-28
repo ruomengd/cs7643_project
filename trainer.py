@@ -76,6 +76,26 @@ class RewardTrainer_vanilla(RewardTrainer):
         kidx = jidx + 1
         rewards_j = rewards[jidx]
         rewards_k = rewards[kidx]
+        loss = -nn.functional.logsigmoid(rewards_j - rewards_k).mean()
+        # loss = - (1 - alpha) * nn.functional.logsigmoid(rewards_j - rewards_k).mean() - alpha * nn.functional.logsigmoid(rewards_k - rewards_j).mean() 
+        # loss = -nn.functional.logsigmoid(rewards_j - rewards_k - torch.tensor(inputs["margin"], device=inputs["margin"][0].device).view(-1,1)).mean()
+
+        if return_outputs:
+            return loss, {"rewards_j": rewards_j, "rewards_k": rewards_k}
+        return loss
+
+
+class RewardTrainer_margin(RewardTrainer):
+    def compute_loss(self, model, inputs, return_outputs=False, alpha=0.1):
+        # alpha is the smoothing parameter
+   
+        rewards = model(input_ids=inputs["input_ids"], attention_mask=inputs["attention_mask"])[0]
+        bsz = rewards.size(0)
+        jidx = torch.arange(0, bsz, 2)
+        kidx = jidx + 1
+        rewards_j = rewards[jidx]
+        rewards_k = rewards[kidx]
+        # loss = -nn.functional.logsigmoid(rewards_j - rewards_k).mean()
         # loss = - (1 - alpha) * nn.functional.logsigmoid(rewards_j - rewards_k).mean() - alpha * nn.functional.logsigmoid(rewards_k - rewards_j).mean() 
         loss = -nn.functional.logsigmoid(rewards_j - rewards_k - torch.tensor(inputs["margin"], device=inputs["margin"][0].device).view(-1,1)).mean()
 
@@ -83,6 +103,24 @@ class RewardTrainer_vanilla(RewardTrainer):
             return loss, {"rewards_j": rewards_j, "rewards_k": rewards_k}
         return loss
 
+
+class RewardTrainer_label_smooth(RewardTrainer):
+    def compute_loss(self, model, inputs, return_outputs=False, alpha=0.1):
+        # alpha is the smoothing parameter
+   
+        rewards = model(input_ids=inputs["input_ids"], attention_mask=inputs["attention_mask"])[0]
+        bsz = rewards.size(0)
+        jidx = torch.arange(0, bsz, 2)
+        kidx = jidx + 1
+        rewards_j = rewards[jidx]
+        rewards_k = rewards[kidx]
+        # loss = -nn.functional.logsigmoid(rewards_j - rewards_k).mean()
+        loss = - (1 - alpha) * nn.functional.logsigmoid(rewards_j - rewards_k).mean() - alpha * nn.functional.logsigmoid(rewards_k - rewards_j).mean() 
+        # loss = -nn.functional.logsigmoid(rewards_j - rewards_k - torch.tensor(inputs["margin"], device=inputs["margin"][0].device).view(-1,1)).mean()
+
+        if return_outputs:
+            return loss, {"rewards_j": rewards_j, "rewards_k": rewards_k}
+        return loss
 
 class RewardTrainer_contrastive(RewardTrainer):
     def compute_loss(self, model, inputs, return_outputs=False, alpha=0.1):
@@ -117,12 +155,11 @@ class RewardTrainer_contrastive(RewardTrainer):
         rewards_j = rewards[jidx]
         rewards_k = rewards[kidx]
         # loss = - (1 - alpha) * nn.functional.logsigmoid(rewards_j - rewards_k).mean() - alpha * nn.functional.logsigmoid(rewards_k - rewards_j).mean() 
-        loss = -nn.functional.logsigmoid(rewards_j - rewards_k - torch.tensor(inputs["margin"], device=inputs["margin"][0].device).view(-1,1)).mean()
+        loss = -nn.functional.logsigmoid(rewards_j - rewards_k).mean()
         
-        loss += beta * c_loss
+        loss += beta * 0.1 * c_loss
         if return_outputs:
             return loss, {"rewards_j": rewards_j, "rewards_k": rewards_k}
         return loss
-
 
   

@@ -34,14 +34,14 @@ class ScriptArguments:
     These arguments vary depending on how many GPUs you have, what their capacity and features are, and what size model you want to train.
     """
     per_device_eval_batch_size: Optional[int] = field(default=4)
-    max_length: Optional[int] = field(default=512) 
+    max_length: Optional[int] = field(default=1024) 
     # base_model: Optional[str] =  field(default="/home/yangrui/HuggingFace-Download-Accelerator/hf_hub/models--meta-llama--Llama-2-7b-hf")
-    base_model: Optional[str] =  field(default="/home/dingruomeng/robust_rm/model_finetuned/TinyLlama-1.1B-Chat-v1.0")
+    base_model: Optional[str] =  field(default="./model_finetuned/TinyLlama-1.1B-Chat-v1.0")
     # peft_name: Optional[str] =  field(default="None")
-    peft_name: Optional[str] =  field(default="/home/dingruomeng/robust_rm/model_finetuned/reward_models_Nectar_vanilla/TinyLlama-1.1B-Chat-v1.0_reward_train_reg_hist_Nectar_TinyLlama-1.1B-Chat-v1.0_vanilla_5e-06/logs/tmp-checkpoint-22807")
+    peft_name: Optional[str] =  field(default="./model_finetuned/..")
     # base_model: Optional[str] =  field(default="/home/yangrui/HuggingFace-Download-Accelerator/hf_hub/models--mistralai--Mistral-7B-Instruct-v0.2")
-    wandb_name: Optional[str] = field(default="eval_TinyLlama-1.1B-Chat-v1.0_reward_models_Nectar_vanilla",)
-    log_dir: Optional[str] = field(default='./eval_TinyLlama-1.1B-Chat-v1.0_reward_models_Nectar_vanilla')
+    wandb_name: Optional[str] = field(default="..",)
+    log_dir: Optional[str] = field(default='..')
     task: Optional[str] = field(default='unified')
 
 parser = HfArgumentParser(ScriptArguments)
@@ -49,7 +49,7 @@ script_args = parser.parse_args_into_dataclasses()[0]
 
 model_name = script_args.base_model
 tokenizer_name = model_name
-data_path = "/home/dingruomeng/robust_rm/data/Unified-Feedback/all"
+data_path = "./data/Unified-Feedback/all"
 accelerator = Accelerator()
 print(data_path)
 if accelerator.is_main_process and not os.path.exists(os.path.join(script_args.log_dir, script_args.wandb_name + "_" + script_args.task)):
