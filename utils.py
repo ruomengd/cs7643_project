@@ -75,7 +75,7 @@ def build_dataset(data_path, source_name, tokenizer, max_length, split='train', 
         return {
             "input_ids_chosen": tokens_chosen["input_ids"][0], "attention_mask_chosen": tokens_chosen["attention_mask"][0],
             "input_ids_rejected": tokens_rejected["input_ids"][0], "attention_mask_rejected": tokens_rejected["attention_mask"][0],
-            "margin": example['conv_A_rating'] - example['conv_B_rating'],
+            "margin": chosen_rating - rejected_rating,
         }
 
     ds = ds.map(formatting_func, batched=False, num_proc=30)
